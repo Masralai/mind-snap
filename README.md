@@ -1,2 +1,2 @@
-mind snap - iykyk
+mind snap - iykyk,
 in the making
