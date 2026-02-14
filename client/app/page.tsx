@@ -5,10 +5,10 @@ export default function Home() {
   return (
     <div className="bg-[#060010] h-screen">
 
-    {/* <Squares>
+    <Squares>
+    <Grid/>
+    </Squares>
     
-    </Squares> */}
-    <Grid></Grid>
 
  </div>
     

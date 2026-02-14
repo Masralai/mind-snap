@@ -8,9 +8,9 @@ interface TileProps {
 }
 
 function Tile({ value, onclick }: TileProps) {
-    let bgColor = "bg-blue-600";
-    if (value === 1) bgColor = "bg-green-500";
-    if (value === 2) bgColor = "bg-red-500";
+    let bgColor = "bg-[#00BCFF]";
+    if (value === 1) bgColor = "bg-[#03fc49]";
+    if (value === 2) bgColor = "bg-[#FF0033]";
 
     return (
         <div onClick={onclick} className={`h-16 w-16 rounded-sm ${bgColor}`} />
@@ -84,14 +84,12 @@ export default function Grid() {
         }).length;
 
         if (count == pattern.length) {
-            setScore((s) => s + 1);
+            setScore((s) => s + 10);
             setIsFlashing(true);
             setTimeout(() => {
                 startGame();
             }, 1000);
-
         }
-
     }
 
     return (
@@ -99,7 +97,9 @@ export default function Grid() {
             {timeLeft > 0 ? (
                 <>
                     <div className="flex gap-4 items-center">
-                        <RainbowButton variant="outline" className="cursor-auto">{timeLeft}s</RainbowButton>
+                        <RainbowButton variant="outline" className="cursor-auto">
+                            {timeLeft}s
+                        </RainbowButton>
                     </div>
                     <br />
                     <div className="grid grid-cols-5 gap-1 w-fit ">
@@ -113,9 +113,25 @@ export default function Grid() {
                     </div>
                 </>
             ) : (
-                <RainbowButton variant="outline" onClick={() => startGame()}>
-                    Start Game
-                </RainbowButton>
+                <div className="flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-500">
+                    {score > 0 ? (
+                        <>
+                        <div className="text-center">
+                            <p className="text-slate-400 uppercase tracking-widest text-xs">
+                                Final Score
+                            </p>
+                            <p className="text-7xl font-black text-green-500">{score}</p>
+                        </div>
+                        <RainbowButton variant="outline" onClick={() => startGame()}>
+                            Play Again
+                        </RainbowButton></>
+                        
+                    ) : (
+                        <RainbowButton variant="outline" onClick={() => startGame()}>
+                           Start Game
+                        </RainbowButton>
+                    )}
+                </div>
             )}
         </div>
     );

@@ -1,5 +1,5 @@
 "use client"
-
+import { PropsWithChildren } from 'react';
 import React, { useRef, useEffect } from 'react';
 
 type CanvasStrokeStyle = string | CanvasGradient | CanvasPattern;
@@ -17,12 +17,13 @@ interface SquaresProps {
   hoverFillColor?: CanvasStrokeStyle;
 }
 
-const Squares: React.FC<SquaresProps> = ({
+const Squares: React.FC<PropsWithChildren<SquaresProps>> = ({
   direction = 'diagonal',
   speed = 0.3,
   borderColor = '#2F2541',
   squareSize = 40,
-  hoverFillColor = '#222'
+  hoverFillColor = '#222',
+  children
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const requestRef = useRef<number | null>(null);
@@ -151,7 +152,18 @@ const Squares: React.FC<SquaresProps> = ({
     };
   }, [direction, speed, borderColor, hoverFillColor, squareSize]);
 
-  return <canvas ref={canvasRef} className="w-full h-full border-none block"></canvas>;
+  return (
+    <div className="relative w-full h-full overflow-hidden">
+      <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full block"
+      style={{ zIndex: 0 }}
+    />
+      <div className="relative z-10 w-full h-full">
+        {children}
+      </div>
+    </div>
+  )
 };
 
 export default Squares;
