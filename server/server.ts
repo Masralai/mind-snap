@@ -4,7 +4,7 @@ import { Server } from "socket.io"
 const app = express()
 
 
-app.get("/",(req,res)=>{
+app.get("/",(req:Request,res:Response)=>{
     res.send("eheh , something to do here")
 })
 
