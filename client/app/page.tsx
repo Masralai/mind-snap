@@ -1,5 +1,5 @@
 import Squares from "@/components/Squares";
-import Grid from "@/components/ui/Grid";
+import Grid from "@/components/Grid";
 
 export default function Home() {
   return (
