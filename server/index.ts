@@ -8,12 +8,10 @@ import type { Player, RoomState } from "./types.js";
 const app = express();
 app.use(cors());
 
-const FRONTEND_URL= process.env.FRONTEND_URL
-
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: ["*",FRONTEND_URL!],
+    origin: ["https://mind-snap-beta.vercel.app/"],
     methods: ["GET", "POST"],
   },
 });
