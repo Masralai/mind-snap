@@ -1,7 +1,14 @@
-export interface Gamestate{
-    pattern:number[],
-    scores: Record<string,number>,
-    timeLeft: number,
-    isActive:boolean,
-    gridSize :number   
+export interface Player {
+    id: string;
+    username: string;
+    score: number;
+    roomId: string;
+}
+
+export interface RoomState {
+    roomId: string;
+    players: Record<string, Player>;
+    timeLeft: number;
+    isActive: boolean;
+    patterns: number[][];
 }
