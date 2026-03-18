@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { RainbowButton } from "./ui/rainbow-button";
 import { io, Socket } from "socket.io-client";
+import cors from "cors";
 
 interface TileProps {
     value: number;
@@ -21,7 +22,7 @@ function Tile({ value, onclick }: TileProps) {
 let socket: Socket | undefined;
 
 export default function Grid() {
-    
+
     const [grid, setGrid] = useState<number[]>(Array(25).fill(0));
     const [pattern, setPattern] = useState<number[]>([]);
     const [isFlashing, setIsFlashing] = useState<boolean>(false);
@@ -29,23 +30,28 @@ export default function Grid() {
     const [timeLeft, setTimeLeft] = useState<number>(0);
     const [isActive, setIsActive] = useState<boolean>(false);
 
-   
+
     const [roomId, setRoomId] = useState<string>("");
     const [username, setUsername] = useState<string>("");
     const [isJoined, setIsJoined] = useState<boolean>(false);
     const [players, setPlayers] = useState<any[]>([]);
-    const [gameOverState, setGameOverState] = useState<{players: Record<string, any>} | null>(null);
+    const [gameOverState, setGameOverState] = useState<{ players: Record<string, any> } | null>(null);
 
     // Synchronized pattern references
     const allPatternsRef = useRef<number[][]>([]);
     const patternIndexRef = useRef<number>(0);
 
-    
+
 
     useEffect(() => {
-        
+
         if (!socket) {
-            socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
+            socket = io("https://mind-snap-0ubr.onrender.com", {
+                withCredentials: true,
+                extraHeaders: {
+                    "my-custom-header": "abcd"
+                }
+            });
         }
 
         socket.on("room-updated", (room) => {
@@ -57,7 +63,7 @@ export default function Grid() {
             setTimeLeft(60);
             setIsActive(true);
             setGameOverState(null);
-            
+
             allPatternsRef.current = room.patterns;
             patternIndexRef.current = 0;
             if (room.patterns && room.patterns.length > 0) {
@@ -85,12 +91,12 @@ export default function Grid() {
         };
     }, []);
 
-    
+
     useEffect(() => {
         if (socket && isJoined) {
             socket.emit("score-update", roomId, score);
         }
-    }, [score, isJoined]); 
+    }, [score, isJoined]);
 
     function joinRoom() {
         if (roomId.trim() && username.trim() && socket) {
@@ -117,7 +123,7 @@ export default function Grid() {
         setIsFlashing(true);
         setPattern(correctPattern);
 
-        var newArr = Array(25).fill(0); 
+        var newArr = Array(25).fill(0);
         correctPattern.forEach((i) => {
             newArr[i] = 1;
         });
@@ -163,18 +169,18 @@ export default function Grid() {
             <div className="flex flex-col h-screen w-screen items-center justify-center gap-6 z-20 relative bg-[#060010] backdrop-blur-sm">
                 <h1 className="text-4xl font-bold text-white mb-4 shadow-lg drop-shadow-lg">Mind Snap Multiplayer</h1>
                 <div className="flex flex-col gap-4">
-                    <input 
-                        type="text" 
-                        placeholder="Username" 
+                    <input
+                        type="text"
+                        placeholder="Username"
                         className="px-4 py-3 rounded-lg bg-slate-900/80 text-white border border-slate-700 w-72 focus:outline-none focus:border-[#00BCFF] transition-colors"
-                        value={username} 
+                        value={username}
                         onChange={e => setUsername(e.target.value)}
                     />
-                    <input 
-                        type="text" 
-                        placeholder="Room ID" 
+                    <input
+                        type="text"
+                        placeholder="Room ID"
                         className="px-4 py-3 rounded-lg bg-slate-900/80 text-white border border-slate-700 w-72 focus:outline-none focus:border-[#00BCFF] transition-colors"
-                        value={roomId} 
+                        value={roomId}
                         onChange={e => setRoomId(e.target.value)}
                     />
                 </div>
@@ -211,15 +217,15 @@ export default function Grid() {
                                 <p className="text-slate-400 uppercase tracking-widest text-sm font-bold">Game Over</p>
                                 <h3 className="text-4xl text-white font-black mb-6">Final Results</h3>
                                 <div className="flex flex-col gap-3">
-                                {Object.values(gameOverState.players).sort((a: any, b: any) => b.score - a.score).map((p: any, idx: number) => (
-                                    <div key={p.id} className="flex justify-between w-64 text-xl border-b border-slate-800 pb-2">
-                                        <span className="text-slate-300 flex gap-2">
-                                            <span className="text-slate-500">{idx + 1}.</span> 
-                                            {p.username}
-                                        </span>
-                                        <span className="text-[#03fc49] font-black">{p.score}</span>
-                                    </div>
-                                ))}
+                                    {Object.values(gameOverState.players).sort((a: any, b: any) => b.score - a.score).map((p: any, idx: number) => (
+                                        <div key={p.id} className="flex justify-between w-64 text-xl border-b border-slate-800 pb-2">
+                                            <span className="text-slate-300 flex gap-2">
+                                                <span className="text-slate-500">{idx + 1}.</span>
+                                                {p.username}
+                                            </span>
+                                            <span className="text-[#03fc49] font-black">{p.score}</span>
+                                        </div>
+                                    ))}
                                 </div>
                                 <div className="mt-12">
                                     <RainbowButton onClick={emitStartGame}>Play Again</RainbowButton>
@@ -243,7 +249,7 @@ export default function Grid() {
                     {sortedPlayers.map((p, idx) => (
                         <div key={p.id} className={`flex justify-between items-center p-3 rounded-lg border transition-colors ${p.id === socket?.id ? 'bg-slate-800/80 border-[#00BCFF]/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]' : 'bg-slate-900/50 border-slate-800/50'}`}>
                             <span className="text-slate-200 truncate font-medium flex items-center gap-2" title={p.username}>
-                                <span className={`w-5 text-center font-bold ${idx === 0 && p.score > 0 ? 'text-yellow-400' : 'text-slate-500'}`}>{idx + 1}.</span> 
+                                <span className={`w-5 text-center font-bold ${idx === 0 && p.score > 0 ? 'text-yellow-400' : 'text-slate-500'}`}>{idx + 1}.</span>
                                 {p.username} {p.id === socket?.id && <span className="text-[10px] font-bold bg-[#00BCFF]/20 text-[#00BCFF] px-2 py-0.5 rounded-full uppercase ml-1">You</span>}
                             </span>
                             <span className="text-[#03fc49] font-black tracking-wider">{p.score}</span>
