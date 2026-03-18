@@ -40,12 +40,12 @@ export default function Grid() {
     const allPatternsRef = useRef<number[][]>([]);
     const patternIndexRef = useRef<number>(0);
 
-    const BACKEND_URL=process.env.BACKEND_URL
+    
 
     useEffect(() => {
         
         if (!socket) {
-            socket = io(BACKEND_URL);
+            socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
         }
 
         socket.on("room-updated", (room) => {
