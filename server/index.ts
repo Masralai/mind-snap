@@ -11,7 +11,7 @@ app.use(cors());
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: ["https://mind-snap-beta.vercel.app/"],
+    origin: ["https://mind-snap-beta.vercel.app", "http://localhost:3000"],
     methods: ["GET", "POST"],
   },
 });
