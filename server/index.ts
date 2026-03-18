@@ -6,13 +6,42 @@ import cors from "cors";
 import type { Player, RoomState } from "./types.js";
 
 const app = express();
-app.use(cors());
+
+const allowedOrigins = new Set(
+  (
+    process.env.CORS_ORIGINS ??
+    "https://mind-snap-beta.vercel.app,http://localhost:3000"
+  )
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean),
+);
+
+function isAllowedOrigin(origin?: string): boolean {
+  if (!origin) return true; // same-origin / server-to-server / curl
+  if (allowedOrigins.has(origin)) return true;
+  // Allow Vercel preview URLs if the app is deployed there.
+  if (/^https:\/\/mind-snap(?:-[\w-]+)?\.vercel\.app$/.test(origin)) return true;
+  return false;
+}
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      callback(null, isAllowedOrigin(origin ?? undefined));
+    },
+    credentials: true,
+  }),
+);
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: ["https://mind-snap-beta.vercel.app", "http://localhost:3000"],
+    origin: (origin, callback) => {
+      callback(null, isAllowedOrigin(origin ?? undefined));
+    },
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
