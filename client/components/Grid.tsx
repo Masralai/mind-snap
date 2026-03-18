@@ -47,10 +47,6 @@ export default function Grid() {
 
         if (!socket) {
             socket = io("https://mind-snap-0ubr.onrender.com", {
-                withCredentials: true,
-                extraHeaders: {
-                    "my-custom-header": "abcd"
-                }
             });
         }
 
