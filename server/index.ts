@@ -62,8 +62,13 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Mind Snap Multiplayer Server Live!");
 });
 
+app.get("/health", (req: Request, res: Response) => {
+  res.json({ status: "ok" });
+});
+
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
+
 
   socket.on("join-room", (roomId: string, username: string) => {
     socket.join(roomId);
@@ -145,7 +150,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3001;
 httpServer.listen(PORT, () => {
   console.log(`Server live on http://localhost:${PORT}`);
 });
